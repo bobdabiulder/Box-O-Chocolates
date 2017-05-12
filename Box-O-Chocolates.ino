@@ -1,12 +1,13 @@
-
+#include <SPI.h>
 #include <Wire.h>
+#include <SD.h>
 #include "SparkFunMPL3115A2.h"
 #include <SparkFunLSM9DS1.h>
 
 //Create an instance of the object
-MPL3115A2 myPressure;
-
-LSM9DS1 imu;
+MPL3115A2 myPressure;   //Create pressure sensor object
+LSM9DS1 imu;  //Create imu object
+File dataFile;
 
 // SDO_XM and SDO_G are both pulled high, so our addresses are:
 #define LSM9DS1_M  0x1E // Would be 0x1C if SDO_M is LOW
@@ -16,6 +17,11 @@ LSM9DS1 imu;
 #define PRINT_SPEED 1000 // 250 ms between prints
 static unsigned long lastPrint = 0; // Keep track of print time
 #define DECLINATION -2.31 // Declination (degrees) in Boulder, CO.
+
+const int SPI_CS_PIN = 10;
+const int EEPROM_ADDR = 0;
+
+int testNum = 0;
 
 void setup()
 {
@@ -48,11 +54,25 @@ void setup()
                   "work for an out of the box LSM9DS1 " \
                   "Breakout, but may need to be modified " \
                   "if the board jumpers are.");
-    while (1)
-      ;
+    //while (1);
   }
-  lastPrint = millis();
+  //lastPrint = millis();
+
+  //SD CARD
+  testNum = EEPROM.read(EEPROM_ADDR) + 1;   //Set the test number to the previous test number+1
+  EEPROM.write(EEPROM_ADDR, testNum);   //Update the test number in the eeprom
+  if (!SD.begin(SPI_CS_PIN)) {    //Check to see if the sd card reader is working
+    Serial.println("SD Card Init Failed!");
+  }
+  dataFile = SD.open(DATA_FILE_NAME+testNum, FILE_WRITE);
+  if (dataFile) {
+    dataFile.print("Data File ");
+    dataFile.println(testNum);
+    dataFile.close();
+  }
 }
+
+float[] sensorData;
 
 void loop()
 {
@@ -113,6 +133,19 @@ void loop()
   Serial.println();
   lastPrint = millis(); // Update lastPrint time
 }
+void writeData(String data) {
+  dataFile = SD.open(DATA_FILE_NAME+testNum, FILE_WRITE);
+  if (dataFile) {
+    dataFile.println(data);
+    dataFile.close();
+  }
+  else {
+    Serial.print("Data write failed for '");
+    Serial.print(data);
+    Serial.println("'");
+  }
+}
+
 void printGyro()
 {
   // Now we can use the gx, gy, and gz variables as we please.
