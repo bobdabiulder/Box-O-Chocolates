@@ -13,10 +13,10 @@ The launch started at about 2467305 ms and ended around 2571305 ms for a total f
 Here are a few graphs that I created
 ------------------------------------
 Acceleration Graph
-![Acceleration Graph](/img/accGraph.png)
+![Acceleration Graph](/Data/img/accGraph.png)
 
 Gyro Graph
-![Gyro Graph](/img/gyroGraph.png)
+![Gyro Graph](/Data/img/gyroGraph.png)
 
 Mag Graph
-![Mag Graph](/img/magGraph.png)
+![Mag Graph](/Data/img/magGraph.png)
