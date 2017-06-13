@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <SD.h>
-#include "SparkFunMPL3115A2.h"
+#include <SparkFunMPL3115A2.h>
 #include <SparkFunLSM9DS1.h>
 #include <EEPROM.h>
 
@@ -31,7 +31,7 @@ void setup()
 
   //Pressure
   myPressure.begin(); // Get sensor online
-  
+
   //Configure the sensor
   myPressure.setModeAltimeter(); // Measure altitude above sea level in meters
   //myPressure.setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa
@@ -103,12 +103,13 @@ void loop()
   sensorData[20] = imu.calcMag(imu.mz);
 
   String data = millis() + "  [";
-  for (int i=0; i < sizeof(sensorData)-1; i++) {
+  for (int i=0; i < (sizeof(sensorData)/sizeof(*sensorData))-1; i++) {
     data += (String)sensorData[i] + ", ";
   }
-  data += (String)sensorData[sizeof(sensorData)];
+  data += (String)sensorData[sizeof(sensorData)/sizeof(*sensorData)];
   data += "]";
   Serial.println(data);
+  writeData(data);
   //writeData();
   
     // Print the heading and orientation for fun!
